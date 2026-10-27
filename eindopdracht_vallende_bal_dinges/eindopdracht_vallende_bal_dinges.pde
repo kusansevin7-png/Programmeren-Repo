@@ -1,7 +1,35 @@
-float ballX;
-float ballY;
-float ballSize = 70;
-float ballSpeed = 5;
+class Ball {
+  float ballX;
+  float ballY;
+  float ballSize;
+  float ballSpeed;
+
+  Ball(float ballSize, float ballSpeed) {
+    this.ballSize = ballSize;
+    this.ballSpeed = ballSpeed;
+    nieuweBal();
+  }
+
+  void beweeg() {
+    ballY = ballY + ballSpeed;
+  }
+
+  void teken() {
+    ellipse(ballX, ballY, ballSize, ballSize);
+  }
+
+  // zet de bal weer boven het scherm op een random plek
+  void nieuweBal() {
+    ballX = random(ballSize, width - ballSize);
+    ballY = -ballSize;
+  }
+
+  boolean isOnderUitBeeld() {
+    return ballY - ballSize / 2 > height;
+  }
+}
+
+Ball b;
 
 float paddleW = 120;
 float paddleH = 15;
@@ -9,7 +37,7 @@ float paddleY = 560;
 
 void setup() {
   size(400, 600);
-  nieuweBal();
+  b = new Ball(70, 5);
 }
 
 void draw() {
@@ -18,30 +46,23 @@ void draw() {
   noStroke();
 
   // de bal
-  ellipse(ballX, ballY, ballSize, ballSize);
+  b.teken();
 
   // de paddle werkt met muis
   rect(mouseX - paddleW / 2, paddleY, paddleW, paddleH);
 
   // de bal valt
-  ballY = ballY + ballSpeed;
+  b.beweeg();
 
-  // als de bal de paddle ding aanraakt bevriest het spel compleet
-  boolean opHoogtePaddle = ballY + ballSize / 2 >= paddleY;
-  boolean opPaddle = abs(ballX - mouseX) < paddleW / 2 + ballSize / 4;
+  // als de bal de paddle raakt, stopt het spel
+  boolean opHoogtePaddle = b.ballY + b.ballSize / 2 >= paddleY;
+  boolean opPaddle = abs(b.ballX - mouseX) < paddleW / 2 + b.ballSize / 4;
   if (opHoogtePaddle && opPaddle) {
     noLoop();
   }
 
-  // als de bal valt dan gaat het spel verder
-  if (ballY - ballSize / 2 > height) {
-    nieuweBal();
+  // als de bal onderuit valt, komt er een nieuwe bal
+  if (b.isOnderUitBeeld()) {
+    b.nieuweBal();
   }
 }
-
-void nieuweBal() {
-  ballX = random(ballSize, width - ballSize);
-  ballY = -ballSize;
-}
-
-//eind tekst: ik vind het eigenlijk meer een spel waar je de ballen moet vermijden anders stopt het spel.
